@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://brpamq4d65j2a"]
+[gd_scene load_steps=2 format=3 uid="uid://brpamq4d65j2a"]
+
+[ext_resource type="Script" uid="uid://b43ilod85edvd" path="res://platform.gd" id="1_mi635"]
 
 [node name="Platform" type="Node3D"]
+script = ExtResource("1_mi635")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true

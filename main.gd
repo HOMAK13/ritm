@@ -1,12 +1,12 @@
 extends Node3D
 
-const DEBUG_LEVEL = 2
-const DEBUG_DIFFICULTY = "insane"
+const DEBUG_LEVEL = 3
+const DEBUG_DIFFICULTY = "normal"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.5;
 const DEBUG_NOOB_COEFICIENT = 0.6;
-
 const JUMP_TIME = .5;
+
 var current_directory;
 var list_of_levels;
 var beatmap;
@@ -17,30 +17,33 @@ var path_to_music = "";
 
 
 @onready var Player = get_node("PlayerController").get_child(0);
+@onready var sky: WorldEnvironment = get_node("Sky");
+@onready var light = get_node("Light");
 
 func _ready():
 	load_level(DEBUG_LEVEL);
 	$MusicController.load_music(current_directory + "/" + path_to_music.erase(path_to_music.length() -1));
 	platform = preload("res://platform.tscn");
-	var scene = platform.instantiate();
-	var time_between_platforms = (beatmap[beatmap_index] - beatmap[beatmap_index - 1]);
-	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
-	scene.scale.x = duration_as_distance - DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
-	scene.position = Vector3(Player.global_position.x + scene.scale.x/2, Player.position.y - 1, Player.position.z);
-	add_child(scene)
+	create_platform(beatmap_index)
 
 func _process(delta: float) -> void:
 	if (beatmap_index < beatmap.size() - 1):
 		time += delta * 1000;
 		if (time > beatmap[beatmap_index]):
 			beatmap_index += 1;
-			var scene = platform.instantiate();
-			var time_between_platforms = (beatmap[beatmap_index] - beatmap[beatmap_index - 1]);
-			var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
-			add_child(scene)
-			scene.scale.x = duration_as_distance - DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
-			scene.position = Vector3(Player.position.x + duration_as_distance/2 + DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT, Player.position.y - 0.4, Player.position.z + (randf_range(-.7, .7)));
-
+			
+			create_platform(beatmap_index)
+			
+			var r = randi_range(0, 1) * 255;
+			var g = randi_range(0, 1) * 255;
+			var b =  randi_range(0, 1) * 255;
+			
+			if (r == 255 and g == 255 and b == 255):
+				light.light_color = Color(250, 160, 150);
+			else:
+				sky.environment.sky.sky_material.set("shader_parameter/sun_color", Vector3(r + 1, g  + 1, b + 1));
+				light.light_color = Color(255 - r, 255 - g, 255 - b);
+			
 func load_level (index: int):
 	var dir: DirAccess = DirAccess.open("user://levels");
 	if not dir: 
@@ -70,3 +73,12 @@ func load_level (index: int):
 	
 	path_to_music = level.get_slice("AudioFilename: ", 1).get_slice("\n", 0).trim_prefix(" ").trim_suffix("\n");
 	print(path_to_music)
+
+func create_platform(index: int) ->void:
+	var scene = platform.instantiate();
+	var time_between_platforms = (beatmap[beatmap_index] - beatmap[beatmap_index - 1]);
+	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
+	add_child(scene)
+	scene.scale.x = duration_as_distance - DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
+	scene.position = Vector3(Player.position.x + duration_as_distance/2 + DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT, 0, Player.position.z + (randf_range(-.7, .7)));
+	scene.id = beatmap_index;
