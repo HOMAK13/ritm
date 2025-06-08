@@ -6,10 +6,10 @@ script/source = "extends CharacterBody3D
 const SPEED = 5.0; 
 
 const GRAVITY = 9;
-const SENSETIVITY = 0.003;
 const JUMP_TIME = .5;
 
 var is_in_air = false;
+var SENSETIVITY = 0.003;
 
 @onready var head = $Head;
 @onready var camera = $Head/Camera3D
