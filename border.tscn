@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjpyren1qc51r"]
+
+[ext_resource type="Script" uid="uid://cgiajg1g0c52y" path="res://border.gd" id="1_ujjr2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ujjr2"]
+transparency = 1
+shading_mode = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ojufs"]
+material = SubResource("StandardMaterial3D_ujjr2")
+
+[node name="Border" type="Node3D"]
+script = ExtResource("1_ujjr2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 0.025, 0, 0, 0, 0.025, 0, 0, 0)
+gi_mode = 0
+mesh = SubResource("BoxMesh_ojufs")

@@ -1,10 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://hf51pbhurlj1"]
+[gd_scene load_steps=12 format=3 uid="uid://hf51pbhurlj1"]
 
 [ext_resource type="Script" uid="uid://b8hilakk6mlnb" path="res://main.gd" id="1_h2yge"]
 [ext_resource type="PackedScene" uid="uid://dtfsxflrf5kkd" path="res://player_controller.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://bi5o2dq73e6nf" path="res://audio_stream_player.gd" id="2_0xm2m"]
 [ext_resource type="Shader" uid="uid://dfs8pxpk4vopd" path="res://sky.gdshader" id="2_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://bqfpi2ncfy36s" path="res://textures/out.png" id="3_lquwl"]
+[ext_resource type="PackedScene" uid="uid://c0vcttysmg0m3" path="res://ui.tscn" id="6_7mycd"]
+[ext_resource type="PackedScene" uid="uid://bjpyren1qc51r" path="res://border.tscn" id="7_272bh"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
 shader = ExtResource("2_1bvp3")
@@ -12,6 +14,7 @@ shader_parameter/sun_pos = Vector3(0, 0, 10000)
 shader_parameter/sun_color = Vector3(255, 1, 1)
 shader_parameter/ball_tex = ExtResource("3_lquwl")
 shader_parameter/disco_ball_radius = 2000.0
+shader_parameter/rotation_speed = 0.5
 
 [sub_resource type="Sky" id="Sky_7mycd"]
 sky_material = SubResource("ShaderMaterial_lquwl")
@@ -58,3 +61,17 @@ script = ExtResource("2_0xm2m")
 
 [node name="PlayerController" parent="." instance=ExtResource("1_ig7tw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="UI" parent="." instance=ExtResource("6_7mycd")]
+
+[node name="Border" parent="." instance=ExtResource("7_272bh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Border2" parent="." instance=ExtResource("7_272bh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+
+[node name="Border3" parent="." instance=ExtResource("7_272bh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
+
+[node name="Border4" parent="." instance=ExtResource("7_272bh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)

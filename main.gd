@@ -1,11 +1,11 @@
 extends Node3D
 
 const DEBUG_LEVEL = 3
-const DEBUG_DIFFICULTY = "normal"
+const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
-const MIN_PLATFORM_LENGTH = 0.5;
-const DEBUG_NOOB_COEFICIENT = 0.6;
-const JUMP_TIME = .5;
+const MIN_PLATFORM_LENGTH = 0.6;
+const DEBUG_NOOB_COEFICIENT = 0.7;
+const JUMP_TIME = 0.4;
 
 var current_directory;
 var list_of_levels;
@@ -15,18 +15,31 @@ var beatmap_index = 0;
 var platform;
 var path_to_music = "";
 
+var last_platform_position = 0;
+var next_platform_position = 0
+
 
 @onready var Player = get_node("PlayerController").get_child(0);
 @onready var sky: WorldEnvironment = get_node("Sky");
 @onready var light = get_node("Light");
+@onready var borders = [get_node("Border"), get_node("Border2"), get_node("Border3"), get_node("Border4")]
+@onready var timer: Sprite2D = get_node("UI").get_child(0);
 
 func _ready():
+	timer.global_position.y = 0;
 	load_level(DEBUG_LEVEL);
+	for x in borders:
+		x.Player = Player;
+		var material = StandardMaterial3D.new();
+		material.albedo_color = Color(255, 255, 255, 0);
+		material.shading_mode = 1;
+		x.get_child(0).set_surface_override_material(0, material); 
 	$MusicController.load_music(current_directory + "/" + path_to_music.erase(path_to_music.length() -1));
+	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY));
 	platform = preload("res://platform.tscn");
-	create_platform(beatmap_index)
 
 func _process(delta: float) -> void:
+	timer.scale.x = (1.0 - time / beatmap[-1]) * get_viewport().size.x;
 	if (beatmap_index < beatmap.size() - 1):
 		time += delta * 1000;
 		if (time > beatmap[beatmap_index]):
@@ -80,5 +93,38 @@ func create_platform(index: int) ->void:
 	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
 	add_child(scene)
 	scene.scale.x = duration_as_distance - DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
-	scene.position = Vector3(Player.position.x + duration_as_distance/2 + DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT, 0, Player.position.z + (randf_range(-.7, .7)));
+	var c = duration_as_distance/2 + DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
+	var a = abs(last_platform_position - next_platform_position);
+	var distance_to_next_platform = sqrt(max(c ** 2 - a ** 2, 0));
+	last_platform_position = next_platform_position;
+	scene.position = Vector3(Player.position.x + distance_to_next_platform , 0, next_platform_position);
 	scene.id = beatmap_index;
+	next_platform_position = randi_range(-1, 1);
+	highlight_next_position(next_platform_position);
+	
+func highlight_next_position(next_position: int):
+	next_position += 1;
+	for x in borders:
+		var a: MeshInstance3D =  x.get_child(0)
+		var material = a.get_surface_override_material(0);
+		material.shading_mode = 0;
+		material.transparency = 1;
+		material.albedo_color = Color(255, 255, 255, 0.4);
+		a.set_surface_override_material(0, material);
+		a.material_overlay = material;
+	
+	for x in range(next_position, next_position + 2):
+		var a: MeshInstance3D =  borders[x].get_child(0)
+		var material = a.get_surface_override_material(0);
+		material.shading_mode = 0;
+		material.transparency = 1;
+		material.albedo_color = Color(255, 0, 0, 0.4);
+		a.set_surface_override_material(0, material);
+		a.material_overlay = material;
+
+func difficulty_to_rotation_speed(difficulty: String):
+	if (difficulty == "easy"): return 0.4
+	if (difficulty == "normsl"): return 0.6
+	if (difficulty == "hard"): return 0.8
+	if (difficulty == "insane"): return 1
+	return 0.5

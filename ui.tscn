@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://c0vcttysmg0m3"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_fyqef"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xb563"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Timer" type="Sprite2D" parent="."]
+position = Vector2(0, -304)
+scale = Vector2(1000, 20)
+texture = SubResource("PlaceholderTexture2D_fyqef")
+
+[node name="Crosshair" type="Sprite2D" parent="."]
+position = Vector2(0, -3.05176e-05)
+scale = Vector2(20, 20)
+texture = SubResource("PlaceholderTexture2D_xb563")
