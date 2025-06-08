@@ -1,8 +1,8 @@
 extends Node3D
 
-# В будущем надо убрать из main меню. Я добавил его сюда временно. Лучше создать отдельную сцену?
+# В будущем надо убрать из main меню. Я добавил его сюда временно. Лучше создать отдельную сцену? То же самое для Экрана смерти
 
-const DEBUG_LEVEL = 3
+const DEBUG_LEVEL = 0
 const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
@@ -38,6 +38,12 @@ var back_button: Button
 var main_menu_container: VBoxContainer
 var settings_menu_container: VBoxContainer
 
+var death_screen: CanvasLayer
+var death_label: Label
+var retry_button: Button
+var auto_respawn: bool = false
+var auto_respawn_checkbox: CheckBox
+
 func _ready():
 	timer.global_position.y = 0;
 	load_level(DEBUG_LEVEL);
@@ -50,7 +56,35 @@ func _ready():
 	$MusicController.load_music(current_directory + "/" + path_to_music.erase(path_to_music.length() -1));
 	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY));
 	platform = preload("res://platform.tscn");
-
+	
+	# Экран смерти
+	death_screen = CanvasLayer.new()
+	death_screen.layer = 2
+	death_screen.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(death_screen)
+	death_screen.hide()
+	
+	var background = ColorRect.new()
+	background.color = Color(0, 0, 0, 1)
+	background.size = Vector2(2000, 2000)
+	death_screen.add_child(background)
+	
+	death_label = Label.new()
+	death_label.text = "ПРОБЛЕМА С НАВЫКОМ"
+	death_label.add_theme_color_override("font_color", Color.RED)
+	death_label.add_theme_font_size_override("font_size", 72)
+	death_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	death_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	death_label.size = Vector2(1000, 200)
+	death_screen.add_child(death_label)
+	
+	retry_button = Button.new()
+	retry_button.text = "Ещё раз"
+	retry_button.custom_minimum_size = Vector2(400, 100)
+	retry_button.connect("pressed", _on_retry_button_pressed)
+	death_screen.add_child(retry_button)
+	
+	
 	# Меню
 	
 	pause_menu = CanvasLayer.new()
@@ -59,7 +93,7 @@ func _ready():
 	
 	main_menu_container = VBoxContainer.new()
 	main_menu_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	main_menu_container.custom_minimum_size = Vector2(400, 220)
+	main_menu_container.custom_minimum_size = Vector2(400, 330)
 	pause_menu.add_child(main_menu_container)
 	main_menu_container.name = "MainMenu"
 	
@@ -74,6 +108,7 @@ func _ready():
 	settings_menu_container.name = "SettingsMenu"
 	pause_menu.add_child(settings_menu_container)
 	settings_menu_container.hide()
+	
 	
 	var settings_label = Label.new()
 	settings_label.text = "НАСТРОЙКИ"
@@ -125,6 +160,20 @@ func _ready():
 	volume_slider.connect("value_changed", _on_volume_changed)
 	sensitivity_slider.connect("value_changed", _on_sensitivity_changed)
 	
+	var respawn_container = HBoxContainer.new()
+	settings_menu_container.add_child(respawn_container)
+	
+	var respawn_label = Label.new()
+	respawn_label.text = "Автоматическое возрождение:"
+	respawn_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	respawn_container.add_child(respawn_label)
+	
+	auto_respawn_checkbox = CheckBox.new()
+	auto_respawn_checkbox.button_pressed = auto_respawn
+	auto_respawn_checkbox.connect("toggled", _on_auto_respawn_toggled)
+	auto_respawn_checkbox.tooltip_text = "При включении игра автоматически перезапускается после смерти"
+	respawn_container.add_child(auto_respawn_checkbox)
+	
 	apply_volume_settings()
 	
 	main_menu_container.hide()
@@ -137,6 +186,8 @@ func _ready():
 
 func _process(delta: float) -> void:
 	timer.scale.x = (1.0 - time / beatmap[-1]) * get_viewport().size.x;
+	if Player.global_transform.origin.y <= -1:
+		show_death_screen()
 	if (beatmap_index < beatmap.size() - 1):
 		time += delta * 1000;
 		if (time > beatmap[beatmap_index]):
@@ -183,9 +234,10 @@ func load_level (index: int):
 	
 	path_to_music = level.get_slice("AudioFilename: ", 1).get_slice("\n", 0).trim_prefix(" ").trim_suffix("\n");
 	print(path_to_music)
-
+	
 func create_platform(index: int) ->void:
 	var scene = platform.instantiate();
+	scene.add_to_group("platform")
 	var time_between_platforms = (beatmap[beatmap_index] - beatmap[beatmap_index - 1]);
 	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
 	add_child(scene)
@@ -218,15 +270,68 @@ func highlight_next_position(next_position: int):
 		material.albedo_color = Color(255, 0, 0, 0.4);
 		a.set_surface_override_material(0, material);
 		a.material_overlay = material;
-
+		
 func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "easy"): return 0.4
 	if (difficulty == "normsl"): return 0.6
 	if (difficulty == "hard"): return 0.8
 	if (difficulty == "insane"): return 1
 	return 0.5
+	
+	
+	# Экран смерти
+func show_death_screen():
+	if auto_respawn:
+		reset_game()
+		return
+	
+	get_tree().paused = true
+	$MusicController.stop() 
+	
+	var viewport_size = get_viewport().size
+	death_label.position = Vector2(
+		(viewport_size.x - death_label.size.x) / 2,
+		(viewport_size.y - death_label.size.y) / 2 - 100
+	)
+	retry_button.position = Vector2(
+		(viewport_size.x - retry_button.size.x) / 2,
+		(viewport_size.y - retry_button.size.y) / 2 + 100
+	)
+	
+	death_screen.show()
+	retry_button.grab_focus()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+func _on_auto_respawn_toggled(button_pressed: bool):
+	auto_respawn = button_pressed
+	save_settings()
 
-# Меню
+
+func _on_retry_button_pressed():
+	reset_game()
+	death_screen.hide()
+	get_tree().paused = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
+func reset_game():
+	for child in get_children():
+		if child.is_in_group("platform"):
+			child.queue_free()
+	
+	time = 0
+	beatmap_index = 0
+	last_platform_position = 0
+	next_platform_position = 0
+	
+
+	Player.global_transform.origin = Vector3(0, 2, 0)
+	Player.velocity = Vector3.ZERO
+	
+	load_level(DEBUG_LEVEL)
+	
+	$MusicController.play()
+	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -292,7 +397,8 @@ func apply_volume_settings():
 func save_settings():
 	var config = {
 		"volume": volume_slider.value,
-		"sensitivity": sensitivity_slider.value
+		"sensitivity": sensitivity_slider.value,
+		"auto_respawn": auto_respawn
 	}
 	var file = FileAccess.open("user://settings.cfg", FileAccess.WRITE)
 	file.store_var(config)
@@ -303,8 +409,12 @@ func load_settings():
 		var config = file.get_var()
 		volume_slider.value = config.get("volume", 80)
 		sensitivity_slider.value = config.get("sensitivity", 0.1)
+		auto_respawn = config.get("auto_respawn", false)
+		
+		if auto_respawn_checkbox:
+			auto_respawn_checkbox.button_pressed = auto_respawn
+		
 		apply_volume_settings()
 		_on_sensitivity_changed(sensitivity_slider.value)
 	
 	
-
