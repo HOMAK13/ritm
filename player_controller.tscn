@@ -49,6 +49,9 @@ func _physics_process(delta: float) -> void:
 		get_tree().reload_current_scene();
 
 	move_and_slide();
+
+func set_mouse_sensitivity(value: float):
+	SENSETIVITY = value
 	
 	
 "
