@@ -1,7 +1,7 @@
 extends Node3D
 
-const DEBUG_LEVEL = 3
-const DEBUG_DIFFICULTY = "normal"
+const DEBUG_LEVEL = 2
+const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
@@ -78,7 +78,7 @@ func load_level (index: int):
 		
 	var i = 1;
 	while (i < beatmap.size()):
-		if float(beatmap[i] - beatmap[i - 1])/1000.0 * DEBUG_SPEED < MIN_PLATFORM_LENGTH + (DEBUG_SPEED * JUMP_TIME) * 0.75:
+		if float(beatmap[i] - beatmap[i - 1])/1000.0 * DEBUG_SPEED < MIN_PLATFORM_LENGTH + (DEBUG_SPEED * JUMP_TIME) * DEBUG_NOOB_COEFICIENT:
 			beatmap.remove_at(i)
 			i -= 1
 		i += 1;
@@ -94,8 +94,8 @@ func create_platform(index: int) ->void:
 	add_child(scene)
 	scene.scale.x = duration_as_distance - DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
 	var c = duration_as_distance/2 + DEBUG_SPEED * JUMP_TIME * DEBUG_NOOB_COEFICIENT;
-	var a = abs(last_platform_position - next_platform_position);
-	var distance_to_next_platform = sqrt(max(c ** 2 - a ** 2 + 0.3, 0));
+	var a = 1 if abs(last_platform_position - next_platform_position) == 2 else 0;
+	var distance_to_next_platform = sqrt(max(c ** 2 - a ** 2 * DEBUG_NOOB_COEFICIENT, 0));
 	last_platform_position = next_platform_position;
 	scene.position = Vector3(Player.position.x + distance_to_next_platform , 0, next_platform_position);
 	scene.id = beatmap_index;
@@ -124,7 +124,7 @@ func highlight_next_position(next_position: int):
 
 func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "easy"): return 0.4
-	if (difficulty == "normsl"): return 0.6
+	if (difficulty == "normal"): return 0.6
 	if (difficulty == "hard"): return 0.8
 	if (difficulty == "insane"): return 1
 	return 0.5

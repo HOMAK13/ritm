@@ -1,11 +1,17 @@
 extends Node3D
 
-const DEBUG_LEVEL = 3
-const DEBUG_DIFFICULTY = "insane"
+const DEBUG_LEVEL = 1
+const DEBUG_DIFFICULTY = "easy"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
 const JUMP_TIME = 0.4;
+const DEBUG_PLAYER_HEALTH_POOL = 100;
+
+var player_hp = DEBUG_PLAYER_HEALTH_POOL;
+var current_streak = 0;
+var max_streak = 0;
+var score = 0;
 
 var current_directory;
 var list_of_levels;
@@ -25,10 +31,13 @@ var next_platform_position = 0
 @onready var sky: WorldEnvironment = get_node("Sky");
 @onready var light = get_node("Light");
 @onready var borders = [get_node("Border"), get_node("Border2"), get_node("Border3"), get_node("Border4")]
-@onready var timer: Sprite2D = get_node("UI").get_child(0);
+#@onready var timer: Sprite2D = get_node("UI").get_child(0);
+@onready var streak_label = get_node("Shooter UI/Streak");
+@onready var max_streak_label = get_node("Shooter UI/MaxStreak");
+@onready var score_label = get_node("Shooter UI/Score");
 
 func _ready():
-	timer.global_position.y = 0;
+	#timer.global_position.y = 0;
 	load_level(DEBUG_LEVEL);
 	for x in borders:
 		x.Player = Player;
@@ -41,16 +50,21 @@ func _ready():
 	platform = preload("res://platform.tscn");
 	target = preload("res://target.tscn");
 	beatmap_types[0] = 1
-	print(beatmap_timings)
 
 func _process(delta: float) -> void:
-	timer.scale.x = (1.0 - time / max(beatmap_timings[-1], 1)) * get_viewport().size.x;
+	#timer.scale.x = (1.0 - time / max(beatmap_timings[-1], 1)) * get_viewport().size.x;
+	if (player_hp <= 0):
+		handle_death();		
+		
+	streak_label.text	= str(current_streak);
+	max_streak_label.text = str(max_streak);
+	score_label.text = str(score);
+	
 	if (beatmap_index < beatmap_timings.size() - 1):
 		time += delta * 1000;
-		if (time > beatmap_timings[beatmap_index] - 500):
+		if (beatmap_index < len(beatmap_timings) and time > beatmap_timings[beatmap_index] - 500):
 			if (beatmap_types[beatmap_index] == 1):
 				create_platform(beatmap_index)
-				print(1);
 				var r = randi_range(0, 1) * 255;
 				var g = randi_range(0, 1) * 255;
 				var b =  randi_range(0, 1) * 255;
@@ -105,7 +119,6 @@ func create_platform(index: int) ->void:
 	var next_platform = index + 1;
 	while (beatmap_types[next_platform] != 1 and next_platform < len(beatmap_types)):
 		next_platform += 1;
-	print(beatmap_timings[next_platform], " ", beatmap_timings[index]," ", beatmap_timings[next_platform] - beatmap_timings[index])
 	var time_between_platforms = (beatmap_timings[next_platform] - beatmap_timings[index]);
 	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
 	add_child(scene)
@@ -138,7 +151,10 @@ func highlight_next_position(next_position: int):
 
 func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "easy"): return 0.4
-	if (difficulty == "normsl"): return 0.6
+	if (difficulty == "normal"): return 0.6
 	if (difficulty == "hard"): return 0.8
 	if (difficulty == "insane"): return 1
 	return 0.5
+
+func handle_death():
+	get_tree().reload_current_scene();
