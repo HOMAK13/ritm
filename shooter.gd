@@ -1,12 +1,13 @@
 extends Node3D
 
-const DEBUG_LEVEL = 1
-const DEBUG_DIFFICULTY = "easy"
+const DEBUG_LEVEL = 3
+const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
 const JUMP_TIME = 0.4;
 const DEBUG_PLAYER_HEALTH_POOL = 100;
+var SENSETIVITY = 0.003;
 
 var player_hp = DEBUG_PLAYER_HEALTH_POOL;
 var current_streak = 0;
@@ -35,6 +36,7 @@ var next_platform_position = 0
 @onready var streak_label = get_node("Shooter UI/Streak");
 @onready var max_streak_label = get_node("Shooter UI/MaxStreak");
 @onready var score_label = get_node("Shooter UI/Score");
+@onready var ui_manager = $UIManager
 
 func _ready():
 	#timer.global_position.y = 0;
@@ -50,15 +52,21 @@ func _ready():
 	platform = preload("res://platform.tscn");
 	target = preload("res://target.tscn");
 	beatmap_types[0] = 1
+	# Инициализация UI Manager
+	ui_manager.init(Player, $MusicController, SENSETIVITY)
+	ui_manager.connect("retry_pressed", reset_game)
+	
 
 func _process(delta: float) -> void:
 	#timer.scale.x = (1.0 - time / max(beatmap_timings[-1], 1)) * get_viewport().size.x;
 	if (player_hp <= 0):
-		handle_death();		
+		ui_manager.show_death_screen()
 		
 	streak_label.text	= str(current_streak);
 	max_streak_label.text = str(max_streak);
 	score_label.text = str(score);
+	
+	if (Player.global_position.y <= -1): ui_manager.show_death_screen()
 	
 	if (beatmap_index < beatmap_timings.size() - 1):
 		time += delta * 1000;
@@ -156,5 +164,12 @@ func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "insane"): return 1
 	return 0.5
 
-func handle_death():
+func reset_game():
 	get_tree().reload_current_scene();
+
+
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_cancel"):
+		ui_manager.toggle_pause_menu()
+
+	

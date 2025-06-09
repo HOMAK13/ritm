@@ -1,7 +1,7 @@
 extends Node3D
 
-const DEBUG_LEVEL = 0
-const DEBUG_DIFFICULTY = "hard"
+const DEBUG_LEVEL = 3
+const DEBUG_DIFFICULTY = "insane"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
