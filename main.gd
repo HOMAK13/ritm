@@ -1,6 +1,6 @@
 extends Node3D
 
-const DEBUG_LEVEL = 2
+const DEBUG_LEVEL = 0
 const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
@@ -14,16 +14,17 @@ var time = 0;
 var beatmap_index = 0;
 var platform;
 var path_to_music = "";
+var SENSETIVITY = 0.003;
 
 var last_platform_position = 0;
 var next_platform_position = 0
-
 
 @onready var Player = get_node("PlayerController").get_child(0);
 @onready var sky: WorldEnvironment = get_node("Sky");
 @onready var light = get_node("Light");
 @onready var borders = [get_node("Border"), get_node("Border2"), get_node("Border3"), get_node("Border4")]
 @onready var timer: Sprite2D = get_node("UI").get_child(0);
+@onready var ui_manager = $UIManager
 
 func _ready():
 	timer.global_position.y = 0;
@@ -37,9 +38,17 @@ func _ready():
 	$MusicController.load_music(current_directory + "/" + path_to_music.erase(path_to_music.length() -1));
 	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY));
 	platform = preload("res://platform.tscn");
+	
+	# Инициализация UI Manager
+	ui_manager.init(Player, $MusicController, SENSETIVITY)
+	ui_manager.connect("retry_pressed", reset_game)
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _process(delta: float) -> void:
 	timer.scale.x = (1.0 - time / beatmap[-1]) * get_viewport().size.x;
+	if Player.global_transform.origin.y <= -1:
+		ui_manager.show_death_screen()
 	if (beatmap_index < beatmap.size() - 1):
 		time += delta * 1000;
 		if (time > beatmap[beatmap_index]):
@@ -86,9 +95,10 @@ func load_level (index: int):
 	
 	path_to_music = level.get_slice("AudioFilename: ", 1).get_slice("\n", 0).trim_prefix(" ").trim_suffix("\n");
 	print(path_to_music)
-
+	
 func create_platform(index: int) ->void:
 	var scene = platform.instantiate();
+	scene.add_to_group("platform")
 	var time_between_platforms = (beatmap[beatmap_index] - beatmap[beatmap_index - 1]);
 	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
 	add_child(scene)
@@ -121,10 +131,34 @@ func highlight_next_position(next_position: int):
 		material.albedo_color = Color(255, 0, 0, 0.4);
 		a.set_surface_override_material(0, material);
 		a.material_overlay = material;
-
+		
 func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "easy"): return 0.4
 	if (difficulty == "normal"): return 0.6
 	if (difficulty == "hard"): return 0.8
 	if (difficulty == "insane"): return 1
 	return 0.5
+
+func reset_game():
+	for child in get_children():
+		if child.is_in_group("platform"):
+			child.queue_free()
+	
+	time = 0
+	beatmap_index = 0
+	last_platform_position = 0
+	next_platform_position = 0
+	
+
+	Player.global_transform.origin = Vector3(0, 2, 0)
+	Player.velocity = Vector3.ZERO
+	
+	load_level(DEBUG_LEVEL)
+	
+	$MusicController.play()
+
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_cancel"):
+		ui_manager.toggle_pause_menu()
+
+	
