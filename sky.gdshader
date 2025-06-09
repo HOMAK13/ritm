@@ -67,9 +67,10 @@ void sky() {
 		if (ball_hit.is_hit) {
 			vec2 uv = get_spherical_uv(ball_hit.hit_point - ball_center, TIME * rotation_speed);
 			COLOR = texture(ball_tex, uv).rgb;
-		} else {
+		} else{
 			float ds = dot(normalize(sun_pos - POSITION), EYEDIR);
 			COLOR += pow(vec3(pow(ds, sun_color.x), pow(ds, sun_color.y), pow(ds, sun_color.z)), vec3(25.0));
+
 		}
 	}
 }

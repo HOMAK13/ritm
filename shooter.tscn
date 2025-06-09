@@ -1,0 +1,77 @@
+[gd_scene load_steps=12 format=3 uid="uid://dkrybiujkokpi"]
+
+[ext_resource type="Script" uid="uid://07k3bdrlquot" path="res://shooter.gd" id="1_n4oak"]
+[ext_resource type="Shader" uid="uid://dfs8pxpk4vopd" path="res://sky.gdshader" id="2_bjmp1"]
+[ext_resource type="Texture2D" uid="uid://bqfpi2ncfy36s" path="res://textures/out.png" id="3_6dsgt"]
+[ext_resource type="Script" uid="uid://bi5o2dq73e6nf" path="res://audio_stream_player.gd" id="4_0pxkr"]
+[ext_resource type="PackedScene" uid="uid://bjpyren1qc51r" path="res://border.tscn" id="6_tokfc"]
+[ext_resource type="PackedScene" uid="uid://p6u6dxmm810t" path="res://shooter_ui.tscn" id="7_bjmp1"]
+[ext_resource type="PackedScene" uid="uid://ddmu2uayjmsoa" path="res://shooter_controller.tscn" id="7_n4oak"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
+shader = ExtResource("2_bjmp1")
+shader_parameter/sun_pos = Vector3(10000, 0, 0)
+shader_parameter/sun_color = Vector3(255, 1, 1)
+shader_parameter/ball_tex = ExtResource("3_6dsgt")
+shader_parameter/disco_ball_radius = 2000.0
+shader_parameter/rotation_speed = 0.5
+
+[sub_resource type="Sky" id="Sky_7mycd"]
+sky_material = SubResource("ShaderMaterial_lquwl")
+
+[sub_resource type="Environment" id="Environment_0xm2m"]
+background_mode = 2
+background_color = Color(0.686715, 0.299858, 0.957069, 1)
+sky = SubResource("Sky_7mycd")
+ambient_light_source = 1
+reflected_light_source = 1
+tonemap_mode = 2
+tonemap_exposure = 2.05
+tonemap_white = 16.0
+glow_intensity = 0.0
+fog_light_energy = 0.0
+fog_sky_affect = 0.991
+volumetric_fog_density = 0.087
+adjustment_contrast = 3.15
+
+[sub_resource type="GDScript" id="GDScript_h2yge"]
+script/source = "extends WorldEnvironment
+
+"
+
+[node name="Shooter" type="Node3D"]
+script = ExtResource("1_n4oak")
+
+[node name="Sky" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0xm2m")
+script = SubResource("GDScript_h2yge")
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.0192324, 4.37033e-08, -0.999815, 0.999815, -8.40673e-10, 0.0192324, 0, -1, -4.37114e-08, -4.51947, 2.11313, 0)
+light_color = Color(0.985733, 0.000802243, 0.985727, 1)
+light_indirect_energy = 0.0
+light_volumetric_fog_energy = 0.0
+light_specular = 0.0
+light_bake_mode = 0
+sky_mode = 1
+
+[node name="MusicController" type="AudioStreamPlayer" parent="."]
+volume_db = -0.42
+script = ExtResource("4_0pxkr")
+
+[node name="Border" parent="." instance=ExtResource("6_tokfc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="Border2" parent="." instance=ExtResource("6_tokfc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+
+[node name="Border3" parent="." instance=ExtResource("6_tokfc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
+
+[node name="Border4" parent="." instance=ExtResource("6_tokfc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="PlayerController" parent="." instance=ExtResource("7_n4oak")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
+[node name="Shooter UI" parent="." instance=ExtResource("7_bjmp1")]
