@@ -10,7 +10,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
 shader = ExtResource("2_1bvp3")
-shader_parameter/sun_pos = Vector3(0, 0, 10000)
+shader_parameter/sun_pos = Vector3(10000, 0, 0)
 shader_parameter/sun_color = Vector3(255, 1, 1)
 shader_parameter/ball_tex = ExtResource("3_lquwl")
 shader_parameter/disco_ball_radius = 2000.0
@@ -40,7 +40,6 @@ script/source = "extends WorldEnvironment
 "
 
 [node name="Main" type="Node3D"]
-transform = Transform3D(0.0941257, 0, -0.99556, 0, 1, 0, 0.99556, 0, 0.0941257, 0, -0.167322, 0)
 script = ExtResource("1_h2yge")
 
 [node name="Sky" type="WorldEnvironment" parent="."]
@@ -59,9 +58,6 @@ light_bake_mode = 0
 volume_db = -0.42
 script = ExtResource("2_0xm2m")
 
-[node name="PlayerController" parent="." instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-
 [node name="UI" parent="." instance=ExtResource("6_7mycd")]
 
 [node name="Border" parent="." instance=ExtResource("7_272bh")]
@@ -75,3 +71,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
 
 [node name="Border4" parent="." instance=ExtResource("7_272bh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="PlayerController" parent="." instance=ExtResource("1_ig7tw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

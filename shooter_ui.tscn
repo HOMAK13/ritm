@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://p6u6dxmm810t"]
+
+[ext_resource type="Script" uid="uid://djfsle2tea5hd" path="res://shooter_ui.gd" id="1_xmtae"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_u6hct"]
+size = Vector2(15, 15)
+
+[sub_resource type="LabelSettings" id="LabelSettings_g0yaa"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kof4k"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xmtae"]
+
+[node name="Shooter UI" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xmtae")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("PlaceholderTexture2D_u6hct")
+
+[node name="Streak" type="Label" parent="."]
+layout_mode = 0
+offset_left = -557.0
+offset_top = -301.0
+offset_right = -468.0
+offset_bottom = -278.0
+text = "I'm the text"
+label_settings = SubResource("LabelSettings_g0yaa")
+
+[node name="MaxStreak" type="Label" parent="."]
+layout_mode = 0
+offset_left = -557.0
+offset_top = -270.0
+offset_right = -468.0
+offset_bottom = -247.0
+text = "I'm the text"
+label_settings = SubResource("LabelSettings_kof4k")
+
+[node name="Score" type="Label" parent="."]
+layout_mode = 0
+offset_left = -557.0
+offset_top = -240.0
+offset_right = -468.0
+offset_bottom = -217.0
+text = "I'm the text"
+label_settings = SubResource("LabelSettings_xmtae")

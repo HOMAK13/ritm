@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://ddmu2uayjmsoa"]
+
+[sub_resource type="GDScript" id="GDScript_yv3m6"]
+script/source = "extends CharacterBody3D
+
+const SPEED = 5.0; 
+
+const GRAVITY = 9;
+const SENSETIVITY = 0.003;
+
+@onready var head = $Head;
+@onready var camera = $Head/Camera3D
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;
+	velocity.x = SPEED
+
+func _unhandled_input(event) -> void:
+	if event is InputEventMouseMotion:
+		head.rotate_y(-event.relative.x * SENSETIVITY)
+		camera.rotate_x(-event.relative.y * SENSETIVITY)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-40), deg_to_rad(60))
+		
+func _physics_process(delta: float) -> void:
+	if transform.origin.y  < -3: 
+		get_tree().reload_current_scene();
+	
+	if !is_on_floor():
+		velocity.y -= GRAVITY * delta
+	else:
+		velocity.y = 0;
+		
+
+	if (Input.is_action_just_pressed(\"dash_right\")):
+		position.z = 1;
+	elif (Input.is_action_just_pressed(\"dash_left\")):
+		position.z = -1;
+	elif (Input.is_action_just_pressed(\"dash_center\")):
+		position.z = 0;
+	elif (Input.is_action_just_pressed(\"shoot\")):
+		var space = get_world_3d().direct_space_state
+		var query = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - camera.global_transform.basis.z * 100)
+		var collision = space.intersect_ray(query);
+		if collision and collision.collider.name == \"TargetCollider\":
+			print(collision.collider.get_parent().delete());
+  
+	move_and_slide();
+	
+	
+"
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yv3m6"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lvefo"]
+
+[node name="PlayerController" type="Node3D"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+transform = Transform3D(0.999981, 0.0029378, -0.005366, -0.00292012, 0.99999, 0.00329836, 0.00537565, -0.00328262, 0.99998, 0, 0, 0)
+slide_on_ceiling = false
+floor_stop_on_slope = false
+floor_max_angle = 1.5708
+script = SubResource("GDScript_yv3m6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_yv3m6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_lvefo")
+
+[node name="Head" type="Node3D" parent="CharacterBody3D"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.179485, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Head"]
