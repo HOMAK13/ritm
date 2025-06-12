@@ -1,12 +1,15 @@
 extends Node3D
 
-const DEBUG_LEVEL = 1
-const DEBUG_DIFFICULTY = "easy"
+const DEBUG_LEVEL = 2
+const DEBUG_DIFFICULTY = "normal"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
 const JUMP_TIME = 0.4;
 const DEBUG_PLAYER_HEALTH_POOL = 100;
+var SENSETIVITY = 0.003;
+
+var PLATFORN_CAHNGE_TYPE = 2
 
 var player_hp = DEBUG_PLAYER_HEALTH_POOL;
 var current_streak = 0;
@@ -35,6 +38,7 @@ var next_platform_position = 0
 @onready var streak_label = get_node("Shooter UI/Streak");
 @onready var max_streak_label = get_node("Shooter UI/MaxStreak");
 @onready var score_label = get_node("Shooter UI/Score");
+@onready var ui_manager = $UIManager
 
 func _ready():
 	#timer.global_position.y = 0;
@@ -49,21 +53,27 @@ func _ready():
 	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY));
 	platform = preload("res://platform.tscn");
 	target = preload("res://target.tscn");
-	beatmap_types[0] = 1
+	beatmap_types[0] = PLATFORN_CAHNGE_TYPE
+	# Инициализация UI Manager
+	ui_manager.init(Player, $MusicController, SENSETIVITY)
+	ui_manager.connect("retry_pressed", reset_game)
+	
 
 func _process(delta: float) -> void:
 	#timer.scale.x = (1.0 - time / max(beatmap_timings[-1], 1)) * get_viewport().size.x;
 	if (player_hp <= 0):
-		handle_death();		
+		ui_manager.show_death_screen()
 		
 	streak_label.text	= str(current_streak);
 	max_streak_label.text = str(max_streak);
 	score_label.text = str(score);
 	
+	if (Player.global_position.y <= -1): ui_manager.show_death_screen()
+	
 	if (beatmap_index < beatmap_timings.size() - 1):
 		time += delta * 1000;
 		if (beatmap_index < len(beatmap_timings) and time > beatmap_timings[beatmap_index] - 500):
-			if (beatmap_types[beatmap_index] == 1):
+			if (beatmap_types[beatmap_index] == PLATFORN_CAHNGE_TYPE):
 				create_platform(beatmap_index)
 				var r = randi_range(0, 1) * 255;
 				var g = randi_range(0, 1) * 255;
@@ -101,23 +111,13 @@ func load_level (index: int):
 		level = FileAccess.open(current_directory + "/" + levels[0], FileAccess.READ).get_as_text();
 	beatmap_timings = Array(level.get_slice("[HitObjects]", 1).split("\n")).map(func(x): return int( x.get_slice(",", 2)));
 	beatmap_types = Array(level.get_slice("[HitObjects]", 1).split("\n")).map(func(x): return int( x.get_slice(",", 3)));
-	
-	var i = 1;
-	var last_slider = 0
-	while(i < beatmap_timings.size()):
-		if (beatmap_types[i] == 1 and beatmap_timings[i] - last_slider < 4000):
-			beatmap_timings.remove_at(i);
-			beatmap_types.remove_at(i);
-			i -= 1;
-		if (beatmap_types[i] == 1): last_slider = beatmap_timings[i]; 
-		i += 1;
-	
+
 	path_to_music = level.get_slice("AudioFilename: ", 1).get_slice("\n", 0).trim_prefix(" ").trim_suffix("\n");
 
 func create_platform(index: int) ->void:
 	var scene = platform.instantiate();
 	var next_platform = index + 1;
-	while (beatmap_types[next_platform] != 1 and next_platform < len(beatmap_types)):
+	while (beatmap_types[next_platform] != PLATFORN_CAHNGE_TYPE and next_platform < len(beatmap_types)):
 		next_platform += 1;
 	var time_between_platforms = (beatmap_timings[next_platform] - beatmap_timings[index]);
 	var duration_as_distance = time_between_platforms / 1000.0 * DEBUG_SPEED; 
@@ -156,5 +156,12 @@ func difficulty_to_rotation_speed(difficulty: String):
 	if (difficulty == "insane"): return 1
 	return 0.5
 
-func handle_death():
+func reset_game():
 	get_tree().reload_current_scene();
+
+
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_cancel"):
+		ui_manager.toggle_pause_menu()
+
+	

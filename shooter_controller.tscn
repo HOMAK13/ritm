@@ -6,10 +6,11 @@ script/source = "extends CharacterBody3D
 const SPEED = 5.0; 
 
 const GRAVITY = 9;
-const SENSETIVITY = 0.003;
+var SENSETIVITY = 0.003;
 
 @onready var head = $Head;
 @onready var camera = $Head/Camera3D
+@onready var dash_sound = preload(\"res://sounds/dash.wav\")
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;
@@ -22,9 +23,6 @@ func _unhandled_input(event) -> void:
 		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-40), deg_to_rad(60))
 		
 func _physics_process(delta: float) -> void:
-	if transform.origin.y  < -3: 
-		get_tree().reload_current_scene();
-	
 	if !is_on_floor():
 		velocity.y -= GRAVITY * delta
 	else:
@@ -42,8 +40,16 @@ func _physics_process(delta: float) -> void:
 		var query = PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position - camera.global_transform.basis.z * 100)
 		var collision = space.intersect_ray(query);
 		if collision and collision.collider.name == \"TargetCollider\":
-			print(collision.collider.get_parent().delete());
-  
+			collision.collider.get_parent().delete()
+		var sound = AudioStreamPlayer.new()
+		
+		sound.stream = dash_sound;
+		sound.pitch_scale = 4;
+		sound.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(sound)
+		sound.play()
+		sound.finished.connect(func(): sound.queue_free())
+		
 	move_and_slide();
 	
 	
