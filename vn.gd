@@ -80,7 +80,7 @@ func _on_viewport_resize():
 
 func _process(delta):
 	while (not is_waiting_for_player and script_line < vn_script.size()):
-		handle_line()
+		if handle_line() == false: break
 		script_line += 1
 	
 	if Input.is_action_just_pressed("jump") and not is_option_window_open:
@@ -151,6 +151,12 @@ func handle_line():
 		_save_globals()
 		get_parent().load_scene(splited_line[1])
 		queue_free()
+		return false
+		
+	if splited_line[0] == "LOADGDSCENE":
+		_save_globals()
+		get_parent().load_gd_scene(splited_line[1])
+		return false
 	
 	if splited_line[0] == "POSITION":
 		if splited_line[1] == "LEFT":
