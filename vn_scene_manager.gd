@@ -10,3 +10,7 @@ func load_scene(path):
 	add_child(scene)
 	scene.VN_SCRIPT_SOURCE = path;
 	scene._preload()
+
+func load_gd_scene(path):
+	print(path)
+	get_tree().change_scene_to_file(path)

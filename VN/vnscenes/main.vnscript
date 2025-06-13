@@ -31,6 +31,8 @@ POSITION LEFT HERO2
 
 SAY HERO What do you think 'bout Кириллица
 
+LOADGDSCENE res://main.tscn
+
 OPTIONS
 CHOOSE1 = 1 Норм
 CHOOSE1 + 2 Говно
