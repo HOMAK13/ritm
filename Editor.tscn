@@ -1,0 +1,283 @@
+[gd_scene load_steps=19 format=3 uid="uid://gdqgud1i7hyd"]
+
+[ext_resource type="Texture2D" uid="uid://bqfpi2ncfy36s" path="res://textures/out.png" id="1_62x0m"]
+[ext_resource type="Script" uid="uid://bpaf5f43a3610" path="res://editor.gd" id="1_jmrqk"]
+[ext_resource type="Script" uid="uid://deodmlq2vh7ko" path="res://timeline.gd" id="2_1qsck"]
+[ext_resource type="Script" uid="uid://dg0oxd6yb0cft" path="res://file_btn.gd" id="2_8j8du"]
+[ext_resource type="Script" uid="uid://bcjy3e4o4ra67" path="res://file_select_btn.gd" id="3_ijktb"]
+[ext_resource type="Script" uid="uid://c4sh0fd1cy0do" path="res://bpme.gd" id="3_jdaql"]
+[ext_resource type="Script" uid="uid://48lixrnoemro" path="res://help_btn.gd" id="3_wh6jm"]
+[ext_resource type="Script" uid="uid://dniss6mey5odg" path="res://metronome_control.gd" id="4_jdaql"]
+[ext_resource type="Script" uid="uid://bbbnsgl5gwbfx" path="res://file_name_le.gd" id="4_sydh6"]
+[ext_resource type="AudioStream" uid="uid://12xnho6344o2" path="res://sounds/dash.wav" id="4_tbrnc"]
+[ext_resource type="Script" uid="uid://c87dpqgybtc3h" path="res://controls.gd" id="5_cyq0g"]
+[ext_resource type="Script" uid="uid://bmi0b2g6xamcm" path="res://metronome.gd" id="5_jdaql"]
+[ext_resource type="Script" uid="uid://b24g756k57osw" path="res://scale_e.gd" id="8_jy6q6"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_1qsck"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_sydh6"]
+size = Vector2(15, 15)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_1qsck"]
+size = Vector2(15, 15)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_agv3s"]
+size = Vector2(15, 15)
+
+[sub_resource type="AudioStreamMP3" id="AudioStreamMP3_cyq0g"]
+
+[node name="Editor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jmrqk")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0901961, 0.0901961, 0.137255, 1)
+
+[node name="UI" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="HBoxContainer" parent="UI"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="FileBTN" type="MenuButton" parent="UI/Menu"]
+layout_mode = 2
+text = "File"
+flat = false
+item_count = 2
+popup/item_0/text = "Open"
+popup/item_0/id = 0
+popup/item_1/text = "Save As"
+popup/item_1/id = 1
+script = ExtResource("2_8j8du")
+
+[node name="EditBTN" type="MenuButton" parent="UI/Menu"]
+layout_mode = 2
+text = "Edit"
+item_count = 2
+popup/item_0/text = "Undo"
+popup/item_0/id = 0
+popup/item_1/text = "Reundo"
+popup/item_1/id = 1
+
+[node name="HelpBTN" type="MenuButton" parent="UI/Menu"]
+layout_mode = 2
+text = "Help"
+item_count = 1
+popup/item_0/text = "Generate baetmap from mp3"
+popup/item_0/id = 0
+script = ExtResource("3_wh6jm")
+
+[node name="Menu2" type="HBoxContainer" parent="UI"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/Menu2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Menu2/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TrackImage" type="TextureRect" parent="UI/Menu2/MarginContainer/HBoxContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = ExtResource("1_62x0m")
+expand_mode = 1
+
+[node name="Properties" type="VBoxContainer" parent="UI/Menu2/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="FileNameLb" type="Label" parent="UI/Menu2/MarginContainer/HBoxContainer/Properties"]
+layout_mode = 2
+text = "Name:"
+
+[node name="SongPathLb" type="Label" parent="UI/Menu2/MarginContainer/HBoxContainer/Properties"]
+layout_mode = 2
+text = "Song Path:"
+
+[node name="DurationLb" type="Label" parent="UI/Menu2/MarginContainer/HBoxContainer/Properties"]
+layout_mode = 2
+text = "Duration:"
+
+[node name="BPMLb" type="Label" parent="UI/Menu2/MarginContainer/HBoxContainer/Properties"]
+layout_mode = 2
+text = "BPM:"
+
+[node name="Values" type="VBoxContainer" parent="UI/Menu2/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+
+[node name="FileNameLE" type="LineEdit" parent="UI/Menu2/MarginContainer/HBoxContainer/Values"]
+layout_mode = 2
+placeholder_text = "Example"
+alignment = 2
+script = ExtResource("4_sydh6")
+
+[node name="FileSelectBTN" type="Button" parent="UI/Menu2/MarginContainer/HBoxContainer/Values"]
+layout_mode = 2
+text = "Select"
+alignment = 2
+script = ExtResource("3_ijktb")
+
+[node name="DurationLb" type="Label" parent="UI/Menu2/MarginContainer/HBoxContainer/Values"]
+layout_mode = 2
+text = "0"
+label_settings = SubResource("LabelSettings_1qsck")
+horizontal_alignment = 2
+
+[node name="BPME" type="LineEdit" parent="UI/Menu2/MarginContainer/HBoxContainer/Values"]
+layout_mode = 2
+placeholder_text = "BPM"
+alignment = 2
+script = ExtResource("3_jdaql")
+
+[node name="Timeline" type="HBoxContainer" parent="UI"]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_1qsck")
+
+[node name="TimelineControl" type="HBoxContainer" parent="UI"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ScaleBox" type="HBoxContainer" parent="UI/TimelineControl"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="UI/TimelineControl/ScaleBox"]
+layout_mode = 2
+text = "Scale:"
+
+[node name="ScaleE" type="LineEdit" parent="UI/TimelineControl/ScaleBox"]
+layout_mode = 2
+placeholder_text = "1.00x"
+script = ExtResource("8_jy6q6")
+
+[node name="Controls" type="HBoxContainer" parent="UI/TimelineControl"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+script = ExtResource("5_cyq0g")
+
+[node name="ResetBTN" type="Button" parent="UI/TimelineControl/Controls"]
+layout_mode = 2
+icon = SubResource("PlaceholderTexture2D_sydh6")
+
+[node name="PauseBTN" type="Button" parent="UI/TimelineControl/Controls"]
+layout_mode = 2
+icon = SubResource("PlaceholderTexture2D_1qsck")
+
+[node name="PlayBTN" type="Button" parent="UI/TimelineControl/Controls"]
+layout_mode = 2
+icon = SubResource("PlaceholderTexture2D_agv3s")
+
+[node name="Timing" type="Label" parent="UI/TimelineControl/Controls"]
+layout_mode = 2
+text = "0.0"
+
+[node name="MetronomeControl" type="HBoxContainer" parent="UI/TimelineControl"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+script = ExtResource("4_jdaql")
+
+[node name="divide" type="HBoxContainer" parent="UI/TimelineControl/MetronomeControl"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/TimelineControl/MetronomeControl/divide"]
+layout_mode = 2
+text = "divide:"
+
+[node name="MetronomeDivide" type="LineEdit" parent="UI/TimelineControl/MetronomeControl/divide"]
+layout_mode = 2
+placeholder_text = "1"
+max_length = 3
+
+[node name="on" type="HBoxContainer" parent="UI/TimelineControl/MetronomeControl"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/TimelineControl/MetronomeControl/on"]
+layout_mode = 2
+text = "enable"
+
+[node name="MetronomeToggle" type="CheckBox" parent="UI/TimelineControl/MetronomeControl/on"]
+layout_mode = 2
+
+[node name="SongSelect" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+ok_button_text = "Open"
+dialog_hide_on_ok = true
+file_mode = 0
+access = 2
+root_subfolder = "/"
+filters = PackedStringArray("*.mp3")
+
+[node name="LevelSelect" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+ok_button_text = "Open"
+file_mode = 0
+access = 1
+filters = PackedStringArray("*.osu")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamMP3_cyq0g")
+
+[node name="Metronome" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_tbrnc")
+script = ExtResource("5_jdaql")
+
+[node name="MP3Select" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.mp3")
+
+[node name="SaveDialog" type="FileDialog" parent="."]
+title = "Open a Directory"
+initial_position = 2
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 1
+
+[node name="Error" type="AcceptDialog" parent="SaveDialog"]
+title = "Slish!"
+initial_position = 2
+size = Vector2i(339, 100)
+dialog_text = "Brat, papka pustaya dolzhna bit' ept*"
+
+[connection signal="file_selected" from="SongSelect" to="." method="_on_song_select_file_selected"]
+[connection signal="file_selected" from="LevelSelect" to="." method="_on_level_select_file_selected"]
+[connection signal="file_selected" from="MP3Select" to="UI/Menu/HelpBTN" method="_on_file_dialog_file_selected"]
+[connection signal="dir_selected" from="SaveDialog" to="." method="_on_save_dialog_dir_selected"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dkrybiujkokpi"]
+[gd_scene load_steps=13 format=3 uid="uid://dkrybiujkokpi"]
 
 [ext_resource type="Script" uid="uid://07k3bdrlquot" path="res://shooter.gd" id="1_n4oak"]
 [ext_resource type="Shader" uid="uid://dfs8pxpk4vopd" path="res://sky.gdshader" id="2_bjmp1"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bjpyren1qc51r" path="res://border.tscn" id="6_tokfc"]
 [ext_resource type="PackedScene" uid="uid://p6u6dxmm810t" path="res://shooter_ui.tscn" id="7_bjmp1"]
 [ext_resource type="PackedScene" uid="uid://ddmu2uayjmsoa" path="res://shooter_controller.tscn" id="7_n4oak"]
+[ext_resource type="PackedScene" uid="uid://dt5qjs1ds1tjn" path="res://ui_manager.tscn" id="8_bjmp1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
 shader = ExtResource("2_bjmp1")
@@ -75,3 +76,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 
 [node name="Shooter UI" parent="." instance=ExtResource("7_bjmp1")]
+
+[node name="UIManager" parent="." instance=ExtResource("8_bjmp1")]

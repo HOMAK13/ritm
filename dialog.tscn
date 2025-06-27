@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://dr6btciyqxura"]
+
+[ext_resource type="Script" path="res://dialog.gd" id="1_5wlj5"]
+[ext_resource type="Texture2D" uid="uid://bpefy2mhaoct0" path="res://VN/images/HERO2.jpg" id="2_5wlj5"]
+[ext_resource type="Texture2D" uid="uid://cahr2f2a8tdqh" path="res://textures/out (1) (1) (1).png" id="2_w7j6r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3thg1"]
+font_size = 140
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Dialog" type="Node2D"]
+script = ExtResource("1_5wlj5")
+
+[node name="background" type="Sprite2D" parent="."]
+scale = Vector2(0.541905, 0.0666456)
+texture = ExtResource("2_w7j6r")
+
+[node name="Text" type="Label" parent="."]
+offset_right = 1778.0
+offset_bottom = 1008.0
+text = "Здесю должен был быть текст, но даже он офигел с Асуны на фоне"
+label_settings = SubResource("LabelSettings_3thg1")
+autowrap_mode = 2
+
+[node name="charecter" type="Sprite2D" parent="."]
+texture = ExtResource("2_5wlj5")
