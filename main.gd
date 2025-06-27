@@ -1,7 +1,7 @@
 extends Node3D
 
-const DEBUG_LEVEL = 3
-const DEBUG_DIFFICULTY = "insane"
+const DEBUG_LEVEL = 6
+const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0;
 const MIN_PLATFORM_LENGTH = 0.6;
 const DEBUG_NOOB_COEFICIENT = 0.7;
@@ -36,6 +36,7 @@ func _ready():
 		material.shading_mode = 1;
 		x.get_child(0).set_surface_override_material(0, material); 
 	$MusicController.load_music(current_directory + "/" + path_to_music.erase(path_to_music.length() -1));
+	print(current_directory + "/" + path_to_music.erase(path_to_music.length() -1))
 	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY));
 	platform = preload("res://platform.tscn");
 	
