@@ -19,7 +19,7 @@ var music_duration = 0
 
 var timeline_scale = 1
 
-var beatmap = []
+var beatmap = [0]
 
 var selected_circle
 
@@ -34,6 +34,8 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("editor_add_circle"):
 			beatmap.append(music_point * 1000)
 			beatmap.sort()
+			timeline.setup();
+			timeline._render_circles()
 	if (beatmap and selected_circle):
 		if Input.is_action_just_pressed("editor_circle_move_left"):
 			beatmap.erase(selected_circle)
@@ -41,32 +43,40 @@ func _process(delta: float) -> void:
 			selected_circle = selected_circle - 200
 			print(selected_circle)
 			beatmap.sort()
+			timeline.setup();
 			timeline._render_circles()
 		if Input.is_action_just_pressed("editor_circle_move_right"):
 			beatmap.erase(selected_circle)
 			beatmap.append(selected_circle + 200)
 			selected_circle = selected_circle + 200
+			timeline.setup();
 			timeline._render_circles()
 			print(selected_circle)
 			beatmap.sort()
 		if Input.is_action_just_pressed("editor_circle_delete"):
 			beatmap.erase(selected_circle)
 			selected_circle = null
+			timeline.setup();
 			timeline._render_circles()
 			print(selected_circle)
 	if (beatmap):
 		if Input.is_action_just_pressed("editor_move_timeline_cursor_forward"):
 			music_point += 1.5
+			music_stream.stop()
+			music_stream.play(music_point)
 			get_node("UI/TimelineControl/Controls/Timing").text = str("%10.2f" % music_point)
+			timeline.setup();
 			timeline._render_circles()
 		if Input.is_action_just_pressed("editor_move_timeline_cursor_backward"):
 			music_point -= 1.5
 			get_node("UI/TimelineControl/Controls/Timing").text = str("%10.2f" % music_point)
-			print(music_point)
+			timeline.setup();
+			music_stream.stop()
+			music_stream.play(music_point)
 			timeline._render_circles()
 		if (is_playing):
 			music_point += delta
-			print(music_point)
+			timeline.setup();
 			get_node("UI/TimelineControl/Controls/Timing").text = str("%10.2f" % music_point)
 
 func play():
@@ -88,6 +98,7 @@ func reset():
 	music_stream.stop();
 	metronome.stop_metronome();
 	music_point = 0
+	
 	
 func _on_song_select_file_selected(path: String) -> void:
 	var stream = AudioStreamMP3.load_from_file(path)
@@ -121,7 +132,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_node("UI/TimelineControl/ScaleBox/ScaleE").text = str(timeline_scale)
 				timeline._render_circles()
 			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-				timeline_scale = max(timeline_scale - 02.15, 0.1)
+				timeline_scale = max(timeline_scale - 0.15, 0.1)
 				get_node("UI/TimelineControl/ScaleBox/ScaleE").text = str(timeline_scale)
 				timeline._render_circles()
 

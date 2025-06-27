@@ -20,7 +20,7 @@ func setup():
 	add_child(scene);
 	scene.position.x = get_window().size.x / 2
 	scene.position.y = get_window().size.y / 2 - scene.get_child(0).texture.get_height()/2
-	beatmap = root.beatmap
+	beatmap = root.beatmap.duplicate(false)
 
 func _process(delta: float) -> void:
 	if (root.is_playing):
