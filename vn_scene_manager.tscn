@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2mfwpr4jf73a"]
+
+[ext_resource type="Script" uid="uid://b6me0kmrokxh8" path="res://vn_scene_manager.gd" id="1_cgf2d"]
+
+[node name="VNSceneManager" type="Node2D"]
+script = ExtResource("1_cgf2d")

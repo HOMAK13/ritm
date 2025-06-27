@@ -201,7 +201,7 @@ func handle_line():
 		background.scale.y = float(window.y) / float(background_height)
 		background.position.x = float(window.x) / float(backgorund_width) * backgorund_width / 2
 		background.position.y = float(window.y) / float(background_height) * background_height / 2
-		
+
 func update_charecters():
 	var window = get_window().size
 	var charecter_width = float(window.x)/3
