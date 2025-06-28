@@ -1,0 +1,68 @@
+[REFRESH]
+//EMPTY LINE
+[LOAD]
+HERO res://VN/images/HERO.jpg
+HERO2 res://VN/images/HERO2.jpg
+SOUND res://VN/sounds/dead.wav
+[VARIABLES]
+CHOOSE1
+CHOOSE2
+
+[DEFAULT]
+BACKGROUND res://VN/images/HERO.jpg
+AMBIENTSOUND res://VN/sounds/sound.mp3
+
+[MAIN]
+POSITION LEFT HERO
+POSITION RIGHT HERO2
+
+SAY HERO Some text
+
+POSITION CENTER HERO
+POSITION LEFT NULL
+
+SAY HERO2 I wanted to say the same one
+PLAY SOUND SOUND
+SAY ambient Bird are singing
+
+POSITION RIGHT NULL
+POSITION CENTER NULL
+POSITION LEFT HERO2
+
+SAY HERO What do you think 'bout Кириллица
+
+LOADGDSCENE res://main.tscn
+
+OPTIONS
+CHOOSE1 = 1 Норм
+CHOOSE1 + 2 Говно
+CHOOSE1 - 3 +-
+ENDOPTIONS
+
+IF CHOOSE1 = 1
+SAY HERO Прекрасно
+ENDIF
+
+IF CHOOSE1 = 2
+SAY HERO2 Сам говно
+ENDIF
+
+IF CHOOSE1 < 0
+SAY HERO Офигеть, значения ниже нуля тоже бывают!
+
+OPTIONS
+CHOOSE2 = 1 1
+CHOOSE2 = 2 2
+ENDOPTIONS
+
+IF CHOOSE2 = 1
+SAY HERO 1
+ENDIF
+
+IF CHOOSE2 = 2
+SAY HERO2 2
+ENDIF
+
+ENDIF
+LOAD res://VN/vnscenes/main.vnscript
+

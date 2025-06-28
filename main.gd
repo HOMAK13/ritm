@@ -2,6 +2,7 @@ extends Node3D
 
 var level_index: int = Global.selected_level_index
 
+
 const DEBUG_DIFFICULTY = "hard"
 const DEBUG_SPEED = 5.0
 const MIN_PLATFORM_LENGTH = 0.6
@@ -54,7 +55,7 @@ func _ready():
 	
 	sky.environment.sky.sky_material.set("shader_parameter/rotation_speed", difficulty_to_rotation_speed(DEBUG_DIFFICULTY))
 	platform = preload("res://platform.tscn")
-	
+
 	ui_manager.init(Player, $MusicController, SENSETIVITY)
 	ui_manager.connect("retry_pressed", reset_game)
 	
