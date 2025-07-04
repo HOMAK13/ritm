@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ckwhq263wo7nt"
+path="res://.godot/imported/Bee Gees - Stayin Alive.mp3-f3bcc0da40b64d7c95d13972b224fa79.mp3str"
+
+[deps]
+
+source_file="res://levels/Bee Gees - Stayin' Alive/Bee Gees - Stayin Alive.mp3"
+dest_files=["res://.godot/imported/Bee Gees - Stayin Alive.mp3-f3bcc0da40b64d7c95d13972b224fa79.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
