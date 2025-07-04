@@ -30,6 +30,13 @@ var selected_level_index: int = -1
 var level_paths = []
 
 func _ready():
+	if !OS.has_feature("editor"):
+		var exe_dir = OS.get_executable_path().get_base_dir()
+		var dir = DirAccess.open(exe_dir)
+		if dir:
+			if !dir.dir_exists("levels"):
+				dir.make_dir("levels")
+	
 	load_settings()
 	
 	canvas_layer = CanvasLayer.new()
@@ -320,20 +327,31 @@ func load_real_levels(container: VBoxContainer):
 	
 	level_paths = []
 	
-	var res_dir = DirAccess.open("res://levels")
-	if res_dir:
-		for dir in res_dir.get_directories():
-			level_paths.append("res://levels/" + dir)
+	# Определяем путь к папке с уровнями
+	var levels_dir_path
+	if OS.has_feature("editor"):
+		levels_dir_path = "res://levels"  # В редакторе
+	else:
+		# В экспортированной версии - рядом с исполняемым файлом
+		levels_dir_path = OS.get_executable_path().get_base_dir().path_join("levels")
 	
-	var user_dir = DirAccess.open("user://levels")
-	if user_dir:
-		for dir in user_dir.get_directories():
-			level_paths.append("user://levels/" + dir)
+	# Загружаем уровни из папки
+	var dir = DirAccess.open(levels_dir_path)
+	if dir:
+		dir.list_dir_begin()
+		var folder = dir.get_next()
+		while folder != "":
+			if dir.current_is_dir() and folder != "." and folder != "..":
+				level_paths.append(levels_dir_path.path_join(folder))
+			folder = dir.get_next()
+	else:
+		print("Не удалось открыть папку уровней: ", levels_dir_path)
 	
 	if level_paths.is_empty():
 		create_empty_levels_message(container)
 		return
 	
+	# Создаем кнопки для каждого уровня
 	for i in range(level_paths.size()):
 		var path = level_paths[i]
 		var dir_name = path.get_file()
@@ -363,7 +381,7 @@ func _on_play_level_pressed():
 
 func create_empty_levels_message(container: VBoxContainer):
 	var message = Label.new()
-	message.text = "Уровни не найдены!\nПоместите .osu файлы в папку user://levels"
+	message.text = "Уровни не найдены!\nПоместите папки с уровнями в папку:\n" + OS.get_executable_path().get_base_dir().path_join("levels")
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
