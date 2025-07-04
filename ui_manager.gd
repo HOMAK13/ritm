@@ -14,6 +14,7 @@ var SENSETIVITY: float
 # Элементы UI
 var pause_menu: CanvasLayer
 var continue_button: Button
+var restart_button: Button 
 var settings_button: Button
 var exit_button: Button
 var settings_menu_container: VBoxContainer
@@ -77,7 +78,7 @@ func create_ui_elements():
 	
 	main_menu_container = VBoxContainer.new()
 	main_menu_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	main_menu_container.custom_minimum_size = Vector2(400, 430) # Увеличили высоту для новой кнопки
+	main_menu_container.custom_minimum_size = Vector2(400, 530) 
 	pause_menu.add_child(main_menu_container)
 	main_menu_container.name = "MainMenu"
 	
@@ -86,12 +87,16 @@ func create_ui_elements():
 	continue_button.custom_minimum_size = Vector2(300, 100)
 	main_menu_container.add_child(continue_button)
 	
+	restart_button = Button.new()
+	restart_button.text = "Рестарт"
+	restart_button.custom_minimum_size = Vector2(300, 100)
+	main_menu_container.add_child(restart_button)
+	
 	settings_button = Button.new()
 	settings_button.text = "Настройки"
 	settings_button.custom_minimum_size = Vector2(300, 100)
 	main_menu_container.add_child(settings_button)
 	
-	# Кнопка выхода в меню паузы
 	exit_button = Button.new()
 	exit_button.text = "Выйти"
 	exit_button.custom_minimum_size = Vector2(300, 100)
@@ -169,13 +174,28 @@ func create_ui_elements():
 func connect_signals():
 	retry_button.connect("pressed", _on_retry_button_pressed)
 	continue_button.connect("pressed", _on_continue_button_pressed)
+	# Подключаем новую кнопку рестарта
+	restart_button.connect("pressed", _on_restart_button_pressed)
 	settings_button.connect("pressed", _on_settings_button_pressed)
-	exit_button.connect("pressed", _on_exit_button_pressed)  # Новая кнопка
-	death_exit_button.connect("pressed", _on_exit_button_pressed)  # Новая кнопка
+	exit_button.connect("pressed", _on_exit_button_pressed)
+	death_exit_button.connect("pressed", _on_exit_button_pressed)
 	back_button.connect("pressed", _on_back_button_pressed)
 	volume_slider.connect("value_changed", _on_volume_changed)
 	sensitivity_slider.connect("value_changed", _on_sensitivity_changed)
 	auto_respawn_checkbox.connect("toggled", _on_auto_respawn_toggled)
+
+# НОВАЯ ФУНКЦИЯ ДЛЯ ОБРАБОТКИ РЕСТАРТА
+func _on_restart_button_pressed():
+	# Скрываем меню паузы
+	get_tree().paused = false
+	main_menu_container.hide()
+	settings_menu_container.hide()
+	
+	# Возвращаем курсор в захваченный режим
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	# Отправляем сигнал рестарта (тот же, что и при смерти)
+	emit_signal("retry_pressed")
 
 func show_death_screen():
 	var sound = AudioStreamPlayer.new()

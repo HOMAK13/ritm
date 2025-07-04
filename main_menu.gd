@@ -1,6 +1,5 @@
 extends Control
 
-# Ссылки на элементы интерфейса
 @onready var left_panel = $HBoxContainer/LeftPanel
 @onready var right_panel = $HBoxContainer/RightPanel
 @onready var arcade_container = $HBoxContainer/RightPanel/ArcadeContainer
@@ -135,22 +134,18 @@ func create_empty_levels_message():
 	level_list.add_child(message)
 
 func create_settings_ui():
-	# Очищаем контейнер настроек
 	for child in settings_container.get_children():
 		child.queue_free()
 	
-	# Создаем элементы настроек (как в UIManager)
 	var settings_vbox = VBoxContainer.new()
 	settings_container.add_child(settings_vbox)
 	
-	# Заголовок
 	var settings_label = Label.new()
 	settings_label.text = "НАСТРОЙКИ"
 	settings_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	settings_label.add_theme_font_size_override("font_size", 32)
 	settings_vbox.add_child(settings_label)
 	
-	# Громкость
 	var volume_container = HBoxContainer.new()
 	settings_vbox.add_child(volume_container)
 	
@@ -166,7 +161,6 @@ func create_settings_ui():
 	volume_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	volume_container.add_child(volume_slider)
 	
-	# Чувствительность
 	var sensitivity_container = HBoxContainer.new()
 	settings_vbox.add_child(sensitivity_container)
 	
@@ -183,7 +177,6 @@ func create_settings_ui():
 	sensitivity_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sensitivity_container.add_child(sensitivity_slider)
 	
-	# Авто-респавн
 	var respawn_container = HBoxContainer.new()
 	settings_vbox.add_child(respawn_container)
 	
@@ -196,33 +189,27 @@ func create_settings_ui():
 	auto_respawn_checkbox.button_pressed = game_settings["auto_respawn"]
 	respawn_container.add_child(auto_respawn_checkbox)
 	
-	# Кнопка "Назад"
 	back_button = Button.new()
 	back_button.text = "Назад"
 	back_button.custom_minimum_size = Vector2(200, 50)
 	settings_vbox.add_child(back_button)
 	
-	# Подключаем сигналы
 	volume_slider.connect("value_changed", Callable(self, "_on_volume_changed"))
 	sensitivity_slider.connect("value_changed", Callable(self, "_on_sensitivity_changed"))
 	auto_respawn_checkbox.connect("toggled", Callable(self, "_on_auto_respawn_toggled"))
 	back_button.connect("pressed", Callable(self, "_on_back_button_pressed"))
 
 func _on_arcade_pressed():
-	# Показываем контейнер с уровнями
 	settings_container.hide()
 	arcade_container.show()
 
 func _on_settings_pressed():
-	# Показываем контейнер с настройками
 	arcade_container.hide()
 	
-	# Создаем UI настроек
 	create_settings_ui()
 	settings_container.show()
 
 func _on_level_selected(level_name):
-	# Сохраняем выбранный уровень и запускаем игру
 	selected_level = level_name
 	get_tree().change_scene_to_file("res://game.tscn")
 
@@ -232,7 +219,6 @@ func _on_quit_pressed():
 func _on_back_button_pressed():
 	settings_container.hide()
 	arcade_container.hide()
-	# Показываем основное меню? (если нужно)
 
 func _on_volume_changed(value):
 	game_settings["volume"] = value
@@ -249,10 +235,8 @@ func _on_auto_respawn_toggled(toggled):
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		# При закрытии окна сохраняем настройки
 		save_settings()
 
-# Загрузка настроек из файла (аналогично UIManager)
 func load_settings():
 	if FileAccess.file_exists("user://settings.cfg"):
 		var file = FileAccess.open("user://settings.cfg", FileAccess.READ)
@@ -260,17 +244,14 @@ func load_settings():
 		if config:
 			game_settings = config
 		else:
-			# Если файл поврежден, используем значения по умолчанию
 			game_settings = {
 				"volume": 80.0,
 				"sensitivity": 0.003,
 				"auto_respawn": false
 			}
 	else:
-		# Если файл не существует, создаем с настройками по умолчанию
 		save_settings()
 
-# Сохранение настроек в файл (аналогично UIManager)
 func save_settings():
 	var file = FileAccess.open("user://settings.cfg", FileAccess.WRITE)
 	file.store_var(game_settings)

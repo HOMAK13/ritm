@@ -3,7 +3,7 @@
 [sub_resource type="GDScript" id="GDScript_yv3m6"]
 script/source = "extends CharacterBody3D
 
-const SPEED = 5.0; 
+var SPEED = 5.0; 
 const DASH_DOWN_FORCE = 5.0
 
 const GRAVITY = 9;
@@ -17,6 +17,8 @@ var audio_player: AudioStreamPlayer
 @onready var camera = $Head/Camera3D
 @onready var dash_sound = preload(\"res://sounds/dash.wav\")
 
+signal jumped()
+signal landed()
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED;
@@ -34,14 +36,18 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta;
 	
-	if (Input.is_action_just_pressed(\"jump\") or Input.is_action_pressed(\"jump\"))and not is_in_air:
+	# Проверка прыжка
+	if (Input.is_action_just_pressed(\"jump\") or Input.is_action_pressed(\"jump\")) and not is_in_air:
 		velocity.y = JUMP_TIME / 2  * GRAVITY;
+		get_parent().get_parent().add_score();
+		emit_signal(\"jumped\")
 		
 	var input_dir = Input.get_vector(\"left\", \"right\", \"up\", \"down\");
 	var directions = (head.global_transform.basis * Vector3(input_dir.x, 0, -1)).normalized()
 	
-	
 	if is_on_floor(): 
+		if is_in_air:
+			emit_signal(\"landed\")
 		is_in_air = false;
 	else:
 		is_in_air = true;
@@ -52,9 +58,6 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(directions.x, 0,  SPEED);
 	
-	if transform.origin.y  < -3: 
-		get_tree().reload_current_scene();
-		
 	if Input.is_action_pressed(\"dash_down\") and not is_on_floor():
 		velocity.y = -DASH_DOWN_FORCE
 		if not audio_player.playing:
@@ -64,8 +67,6 @@ func _physics_process(delta: float) -> void:
 
 func set_mouse_sensitivity(value: float):
 	SENSETIVITY = value
-	
-	
 "
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_yv3m6"]
