@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cu1axt71xy37m"
+path="res://.godot/imported/soft-hitclap88.wav-10ccf826385c9103e0c1a9337b6804ac.sample"
+
+[deps]
+
+source_file="res://levels/THE ORAL CIGARETTES - Kyouran Hey Kids!!/soft-hitclap88.wav"
+dest_files=["res://.godot/imported/soft-hitclap88.wav-10ccf826385c9103e0c1a9337b6804ac.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

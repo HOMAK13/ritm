@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c1rkksacfwlva"
+path="res://.godot/imported/Shakira-Waka Waka (Esto Es Africa).mp3-40da3dce47d4f3a2a471fb26b8444dda.mp3str"
+
+[deps]
+
+source_file="res://levels/Shakira - Waka Waka (Esto Es Africa)/Shakira-Waka Waka (Esto Es Africa).mp3"
+dest_files=["res://.godot/imported/Shakira-Waka Waka (Esto Es Africa).mp3-40da3dce47d4f3a2a471fb26b8444dda.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
