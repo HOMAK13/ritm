@@ -1,12 +1,8 @@
 extends Node3D
 
-# Ресурсы для эффектов
-var JUMP_PARTICLES = preload("res://effects/jump_particles.tscn")
-var LAND_PARTICLES = preload("res://effects/land_particles.tscn")
-
 const DEBUG_DIFFICULTY = "hard"
 var DEBUG_SPEED = 5.0
-const JUMP_TIME = 0.4 
+const JUMP_TIME = 0.4
 const MIN_PLATFORM_LENGTH = 0.6
 const DEBUG_NOOB_COEFICIENT = 1
 var level_path: String = Global.selected_level_path
@@ -107,9 +103,8 @@ func _ready():
 	SS = Image.load_from_file("res://textures/SS.png")
 	SSS = Image.load_from_file("res://textures/SSS.png")
 
-	# Подключение сигналов игрока
+	# Подключение сигнала прыжка
 	Player.connect("jumped", Callable(self, "_on_player_jumped"))
-	Player.connect("landed", Callable(self, "_on_player_landed"))
 
 	_init_ui()
 	
@@ -120,22 +115,11 @@ func _ready():
 	_resize_ui()
 
 func _on_player_jumped():
-	var particles = JUMP_PARTICLES.instantiate()
-	add_child(particles)
-	particles.global_position = Player.global_position + Vector3(0, -0.5, 0)
-	particles.emitting = true
-	
 	if Player.has_node("Head/Camera3D"):
 		var camera = Player.get_node("Head/Camera3D")
 		var tween = create_tween()
 		tween.tween_property(camera, "fov", 85.0, 0.1)
 		tween.tween_property(camera, "fov", 80.0, 0.3)
-
-func _on_player_landed():
-	var particles = LAND_PARTICLES.instantiate()
-	add_child(particles)
-	particles.global_position = Player.global_position + Vector3(0, -0.5, 0)
-	particles.emitting = true
 
 func _process(delta: float) -> void:
 	timer.scale.x = (1.0 - time / beatmap[-1]) * get_viewport().size.x
@@ -359,6 +343,7 @@ func _show_stats():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _init_ui():
+	# Health Label
 	health_lb = Label.new()
 	health_lb.text = "HP: %d" % player_hp
 	health_lb.add_theme_font_size_override("font_size", 24)
@@ -366,6 +351,7 @@ func _init_ui():
 	health_lb.position = Vector2(20, 20)
 	ui_canvas.add_child(health_lb)
 	
+	# Stats Container
 	var stats_container = MarginContainer.new()
 	stats_container.anchor_right = 1.0
 	stats_container.anchor_top = 0.0
@@ -380,6 +366,7 @@ func _init_ui():
 	stats_vbox.add_theme_constant_override("separation", 5)
 	stats_container.add_child(stats_vbox)
 	
+	# Score Label
 	score_lb = Label.new()
 	score_lb.text = "Score: 0"
 	score_lb.add_theme_font_size_override("font_size", 24)
@@ -387,6 +374,7 @@ func _init_ui():
 	score_lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	stats_vbox.add_child(score_lb)
 	
+	# Combo Label
 	combo_lb = Label.new()
 	combo_lb.text = "Combo: 0"
 	combo_lb.add_theme_font_size_override("font_size", 24)
@@ -394,6 +382,7 @@ func _init_ui():
 	combo_lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	stats_vbox.add_child(combo_lb)
 	
+	# Accuracy Label
 	acc_lb = Label.new()
 	acc_lb.text = "Acc: 0%"
 	acc_lb.add_theme_font_size_override("font_size", 24)
@@ -403,6 +392,7 @@ func _init_ui():
 	
 	# Rank Sprite (top right, moved left)
 	rank_sprite = Sprite2D.new()
+	# Сдвигаем на 150 пикселей от правого края вместо 80
 	rank_sprite.position = Vector2(get_viewport().size.x - 200, 100)
 	rank_sprite.scale = Vector2(1.5, 1.5)
 	ui_canvas.add_child(rank_sprite)
